@@ -1,6 +1,0 @@
-Future Upgrades (If you ever want to code again)
-If you ever decide to make version 2.0, here is what would make it even easier for "normal people":
-
-Live Sniffer: Instead of uploading a file, the Python script listens to the Wi-Fi card in real-time.
-
-Email Alerts: It sends you an email: "Warning: Intrusion detected at 2:00 AM."
