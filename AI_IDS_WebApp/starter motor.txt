@@ -1,0 +1,3 @@
+cd Desktop\AI_IDS_WebApp
+
+python app.py
