@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Traffic | AI-IDS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .pulsing-dot { animation: pulse 1.5s infinite; }
+        
+        /* The Hacker Terminal Look */
+        .terminal { 
+            background-color: #050505; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            padding: 1rem; 
+            border-radius: 8px; 
+            height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .terminal table { width: 100%; border-collapse: collapse; margin-top: 0; }
+        .terminal td { padding: 6px 8px; border-bottom: 1px solid #111; font-size: 0.85rem; }
+        .timestamp { color: #888; margin-right: 10px; }
+        .warning-text { color: #ff3333; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>AI-IDS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li class="active"><a href="/live"><i class="fa-solid fa-network-wired"></i> Live Traffic</a></li>
+            <li><a href="/logs"><i class="fa-solid fa-file-csv"></i> Logs</a></li>
+            <li><a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar"><i class="fa-solid fa-user-secret"></i></div>
+            <div class="user-info">
+                <h4>Admin User</h4>
+                <p>SecOps Team</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1>Real-Time Monitoring</h1>
+            <div class="status-indicator" style="color: var(--accent-blue); background: rgba(59, 130, 246, 0.1);">
+                <span class="dot pulsing-dot" style="background-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue);"></span> 
+                <span id="connection-status">Listening for Sensor...</span>
+            </div>
+        </header>
+
+        <section class="results-grid" style="display: grid;">
+            
+            <div class="card score-card">
+                <h3>Live Threat Level</h3>
+                <div class="big-number" id="live-risk" style="color: var(--accent-blue);">0%</div>
+                <p>Based on recent packet stream</p>
+            </div>
+
+            <div class="card table-card" style="grid-column: span 2;">
+                <h3>Packet Stream Console</h3>
+                <div class="terminal" id="terminal-window">
+                    <table>
+                        <tbody id="live-terminal-body">
+                            <tr><td><span class="timestamp">[SYSTEM]</span> Initializing secure live socket...</td></tr>
+                            <tr><td><span class="timestamp">[SYSTEM]</span> AI model loaded and standing by.</td></tr>
+                            <tr><td><span class="timestamp">[SYSTEM]</span> Awaiting connection from local agent...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+
+<script>
+        const terminalBody = document.getElementById('live-terminal-body');
+        const liveRiskEl = document.getElementById('live-risk');
+        const statusText = document.getElementById('connection-status');
+        const pulsingDot = document.querySelector('.pulsing-dot');
+        const statusContainer = statusText.parentElement;
+
+        async function fetchLiveData() {
+            try {
+                const response = await fetch('/api/get-live');
+                const data = await response.json();
+
+                // If the mailbox has packets, we have a live connection!
+                if (data.recent_packets && data.recent_packets.length > 0) {
+                    
+                    // 1. Turn the indicator GREEN
+                    statusText.innerText = "Receiving Live Telemetry...";
+                    statusContainer.style.color = "var(--accent-green)";
+                    statusContainer.style.background = "rgba(16, 185, 129, 0.1)";
+                    pulsingDot.style.backgroundColor = "var(--accent-green)";
+                    pulsingDot.style.boxShadow = "0 0 10px var(--accent-green)";
+
+                    // 2. Update Risk Score
+                    liveRiskEl.innerText = `${data.risk_score}%`;
+                    if (data.risk_score > 50) {
+                        liveRiskEl.style.color = "var(--accent-red)";
+                    } else {
+                        liveRiskEl.style.color = "var(--accent-green)";
+                    }
+
+                    // 3. Print the packets to the Hacker Terminal
+                    terminalBody.innerHTML = ""; // Clear old lines
+                    data.recent_packets.forEach(p => {
+                        const timeStr = new Date().toLocaleTimeString();
+                        const statusClass = p.is_attack === 1 ? 'warning-text' : '';
+                        const statusMsg = p.is_attack === 1 ? 'MALICIOUS SIGNATURE DETECTED 🚨' : 'Traffic normal ✅';
+
+                        const row = `<tr><td><span class="timestamp">[${timeStr}]</span> <span class="${statusClass}">Packet #${p.id} - ${statusMsg}</span></td></tr>`;
+                        terminalBody.innerHTML += row;
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching live data:", error);
+            }
+        }
+
+        // Run this check every 2.5 seconds automatically
+        setInterval(fetchLiveData, 2500);
+    </script>
+
+
+
+</body>
+</html>

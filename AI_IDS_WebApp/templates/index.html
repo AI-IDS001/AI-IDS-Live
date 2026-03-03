@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-IDS | Intelligent Security</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>AI-IDS</span>
+        </div>
+        <ul class="nav-links">
+            <li class="{% if active_page == 'dashboard' %}active{% endif %}"><a href="/"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li class="{% if active_page == 'live' %}active{% endif %}"><a href="/live"><i class="fa-solid fa-network-wired"></i> Live Traffic</a></li>
+            <li class="{% if active_page == 'logs' %}active{% endif %}"><a href="/logs"><i class="fa-solid fa-file-csv"></i> Logs</a></li>
+            <li class="{% if active_page == 'settings' %}active{% endif %}"><a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar"><i class="fa-solid fa-user-secret"></i></div>
+            <div class="user-info">
+                <h4>Admin User</h4>
+                <p>SecOps Team</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1>Network Traffic Analysis</h1>
+            <div class="status-indicator">
+                <span class="dot"></span> System Active
+            </div>
+        </header>
+
+        <section class="upload-container">
+            <div class="upload-box" id="drop-zone">
+                <div class="icon-area">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3>Upload Network Log (CSV)</h3>
+                <p>Drag & drop your NSL-KDD traffic file here</p>
+                <input type="file" id="file-input" accept=".csv" hidden>
+                <button class="btn-primary" onclick="document.getElementById('file-input').click()">Browse Files</button>
+            </div>
+        </section>
+
+        <div class="loader-container" id="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>AI is analyzing traffic patterns...</p>
+        </div>
+
+        <section class="results-grid" id="results-area" style="display: none;">
+            
+            <div class="card score-card">
+                <h3>Threat Score</h3>
+                <div class="big-number" id="risk-score">0%</div>
+                <p>Traffic classified as malicious</p>
+            </div>
+
+            <div class="card status-card">
+                <h3>System Status</h3>
+                <div id="status-badge" class="badge safe">SECURE</div>
+            </div>
+
+            <div class="card stats-card">
+                <h3>Traffic Breakdown</h3>
+                <ul>
+                    <li><i class="fa-solid fa-check-circle success"></i> Normal: <span id="normal-count">0</span></li>
+                    <li><i class="fa-solid fa-triangle-exclamation danger"></i> Attacks: <span id="attack-count">0</span></li>
+                </ul>
+            </div>
+
+            <div class="card table-card">
+                <h3>Recent Packets (Preview)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Packet ID</th>
+                            <th>Prediction</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
