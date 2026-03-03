@@ -1,1 +1,141 @@
-<h1>System Logs</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs | AI-IDS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .controls-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+        }
+        .filter-select {
+            padding: 10px 15px;
+            background-color: var(--bg-card);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .btn-export {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-export:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>AI-IDS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/live"><i class="fa-solid fa-network-wired"></i> Live Traffic</a></li>
+            <li class="active"><a href="/logs"><i class="fa-solid fa-file-csv"></i> Logs</a></li>
+            <li><a href="/settings"><i class="fa-solid fa-gear"></i> Settings</a></li>
+        </ul>
+        <div class="user-profile">
+            <div class="avatar"><i class="fa-solid fa-user-secret"></i></div>
+            <div class="user-info">
+                <h4>Admin User</h4>
+                <p>SecOps Team</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1>Historical Threat Logs</h1>
+            <div class="status-indicator">
+                <span class="dot" style="background-color: var(--text-secondary); box-shadow: none;"></span> Database Synced
+            </div>
+        </header>
+
+        <section class="card table-card">
+            
+            <div class="controls-bar">
+                <input type="text" class="search-input" placeholder="Search by Protocol, Status, or ID...">
+                <select class="filter-select">
+                    <option>All Traffic</option>
+                    <option>Threats Only (Malicious)</option>
+                    <option>Clean Traffic (Normal)</option>
+                </select>
+                <button class="btn-export"><i class="fa-solid fa-download"></i> Export CSV</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Protocol Type</th>
+                        <th>Service</th>
+                        <th>Flag</th>
+                        <th>AI Classification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="timestamp">Today, 14:32:01</td>
+                        <td>TCP</td>
+                        <td>HTTP</td>
+                        <td>SF</td>
+                        <td style="color: var(--accent-green);">Normal ✅</td>
+                    </tr>
+                    <tr>
+                        <td class="timestamp">Today, 14:31:55</td>
+                        <td>ICMP</td>
+                        <td>ECO_I</td>
+                        <td>SF</td>
+                        <td style="color: var(--accent-red); font-weight: bold;">Smurf Attack 🚨</td>
+                    </tr>
+                    <tr>
+                        <td class="timestamp">Today, 14:28:10</td>
+                        <td>TCP</td>
+                        <td>Private</td>
+                        <td>S0</td>
+                        <td style="color: var(--accent-red); font-weight: bold;">Neptune DoS 🚨</td>
+                    </tr>
+                    <tr>
+                        <td class="timestamp">Today, 14:20:05</td>
+                        <td>UDP</td>
+                        <td>Domain_u</td>
+                        <td>SF</td>
+                        <td style="color: var(--accent-green);">Normal ✅</td>
+                    </tr>
+                    <tr>
+                        <td class="timestamp">Today, 14:15:22</td>
+                        <td>TCP</td>
+                        <td>FTP</td>
+                        <td>RSTR</td>
+                        <td style="color: var(--accent-red); font-weight: bold;">PortSweep 🚨</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>
